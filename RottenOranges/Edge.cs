@@ -11,5 +11,6 @@ and 2 for a rotten orange
 
 internal enum Edge
 {
-    Left, TopLeft, Top, TopRight, Right, BottomRight, Bottom, BottomLeft
+    Left, TopLeft, Top, TopRight, Right, BottomRight, Bottom, BottomLeft,
+    NotEdge
 }

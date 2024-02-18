@@ -15,29 +15,52 @@ using System.Runtime.InteropServices;
 
 internal class Program
 {
+    static int rows = 3;
+    static int cols = 5;
+    static int[] todaysOranges = new int[] { 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2 };
+    static int[] tomorrowsOranges = new int[todaysOranges.Length];
+    static int daysPassed = 0;
     private static void Main(string[] args)
     {
-        var rows = 3; 
-        int cols = 5;
-        int[] oranges = new int[]{ 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2};
-        PrintCrate(rows, cols, oranges);
-        RotOranges(rows, cols, oranges);
+        PrintCrate(rows, cols, todaysOranges);
+        while (todaysOranges != tomorrowsOranges)
+        {
+            EdgeChecker(rows, cols, todaysOranges);
+            if (todaysOranges == tomorrowsOranges)
+            {
+                PrintCrate(rows, cols, todaysOranges);
+                PrintAnswer(-1);
+            }
+            todaysOranges = tomorrowsOranges;
+            tomorrowsOranges.ToList().Clear();
+            PrintCrate(rows, cols, todaysOranges);
+            daysPassed++;
+        }
     }
 
-    private static void RotOranges(int rows, int cols, int[] oranges)
+    private static void EdgeChecker(int rows, int cols, int[] oranges)
     {
         
-        for(int i = 0; i < oranges.Length; i++) 
+        for (int i = 0; i < oranges.Length; i++) 
         {
-            //Edge Represents different sides/corners
             Edge edge = new Edge();
+            edge = Edge.NotEdge;
+            //Edge Represents different sides/corners
+            if (i < cols)
+            {
+                edge = Edge.Top;
+            }
+            if (i > oranges.Length - cols)
+            {
+                edge = Edge.Bottom;
+            }
             if (i % cols == 0)
             {
-                if (i <= cols)
+                if (i == 0)
                 {
                     edge = Edge.TopLeft;
                 }
-                else if (i == oranges.Length-cols)
+                if (i == oranges.Length-cols)
                 {
                     edge = Edge.BottomLeft;
                 }
@@ -61,21 +84,164 @@ internal class Program
                     edge = Edge.Right;
                 }
             }
-            if (i < cols)
-            {
-                edge = Edge.Top;
-            }
-            if (i > oranges.Length - cols)
-            {
-                edge = Edge.Bottom;
-            }
-        }
+            
+            RotOranges(rows, cols, oranges, edge, i);
         }
     }
 
-    private static void Rot(int i, int rows, int cols, int[] oranges, EDirection right)
+    private static void RotOranges(int rows, int cols, int[] oranges, Edge? edge, int currentSlot)
     {
-        throw new NotImplementedException();
+        
+        if (oranges[currentSlot] == 2)
+        {
+            if (edge == null)
+            {
+                var slotLeft = oranges[currentSlot - 1];
+                var slotRight = oranges[currentSlot + 1];
+                var slotAbove = oranges[currentSlot - cols];
+                var slotBelow = oranges[currentSlot + cols];
+                if (slotLeft == 1)
+                {
+                    tomorrowsOranges[currentSlot - 1] = 2;
+                }
+                if (oranges[slotRight] == 1)
+                {
+                    tomorrowsOranges[currentSlot + 1] = 2;
+                }
+                if (oranges[slotBelow] == 1)
+                {
+                    tomorrowsOranges[currentSlot + cols] = 2;
+                }
+                if (oranges[slotAbove] == 1)
+                {
+                    tomorrowsOranges[currentSlot - cols] = 2;
+                }
+            }
+            else if (edge == Edge.TopLeft)
+            {
+                var slotRight = oranges[currentSlot + 1];
+                var slotBelow = oranges[currentSlot + cols];
+                if (oranges[slotRight] == 1)
+                {
+                    tomorrowsOranges[currentSlot + 1] = 2;
+                }
+                if (oranges[slotBelow] == 1)
+                {
+                    tomorrowsOranges[currentSlot + cols] = 2;
+                }
+            }
+            else if (edge == Edge.Top)
+            {
+                var slotLeft = oranges[currentSlot - 1];
+                var slotRight = oranges[currentSlot + 1];
+                var slotBelow = oranges[currentSlot + cols];
+                if (slotLeft == 1)
+                {
+                    tomorrowsOranges[currentSlot-1] = 2;
+                }
+                if (oranges[slotRight] == 1)
+                {
+                    tomorrowsOranges[currentSlot+1] = 2;
+                }
+                if (oranges[slotBelow] == 1)
+                {
+                    tomorrowsOranges[currentSlot + cols] = 2;
+                }
+            }
+            else if (edge == Edge.TopRight)
+            {
+                var slotLeft = oranges[currentSlot - 1];
+                var slotBelow = oranges[currentSlot + cols];
+                if (slotLeft == 1)
+                {
+                    tomorrowsOranges[currentSlot - 1] = 2;
+                }
+                if (oranges[slotBelow] == 1)
+                {
+                    tomorrowsOranges[currentSlot + cols] = 2;
+                }
+            }
+            else if (edge == Edge.Right)
+            {
+                var slotLeft = oranges[currentSlot - 1];
+                var slotAbove = oranges[currentSlot - cols];
+                var slotBelow = oranges[currentSlot + cols];
+                if (slotLeft == 1)
+                {
+                    tomorrowsOranges[currentSlot - 1] = 2;
+                }
+                if (oranges[slotBelow] == 1)
+                {
+                    tomorrowsOranges[currentSlot + cols] = 2;
+                }
+                if (oranges[slotAbove] == 1)
+                {
+                    tomorrowsOranges[currentSlot - cols] = 2;
+                }
+            }
+            else if (edge == Edge.BottomRight)
+            {
+                var slotLeft = oranges[currentSlot - 1];
+                var slotAbove = oranges[currentSlot - cols];
+                if (slotLeft == 1)
+                {
+                    tomorrowsOranges[currentSlot - 1] = 2;
+                }
+                if (oranges[slotAbove] == 1)
+                {
+                    tomorrowsOranges[currentSlot - cols] = 2;
+                }
+            }
+            else if (edge == Edge.Bottom)
+            {
+                var slotLeft = oranges[currentSlot - 1];
+                var slotRight = oranges[currentSlot + 1];
+                var slotAbove = oranges[currentSlot - cols];
+                if (slotLeft == 1)
+                {
+                    tomorrowsOranges[currentSlot - 1] = 2;
+                }
+                if (oranges[slotRight] == 1)
+                {
+                    tomorrowsOranges[currentSlot + 1] = 2;
+                }
+                if (oranges[slotAbove] == 1)
+                {
+                    tomorrowsOranges[currentSlot - cols] = 2;
+                }
+            }
+            else if (edge == Edge.BottomLeft)
+            {
+                var slotRight = oranges[currentSlot + 1];
+                var slotAbove = oranges[currentSlot - cols];
+                if (oranges[slotRight] == 1)
+                {
+                    tomorrowsOranges[currentSlot + 1] = 2;
+                }
+                if (oranges[slotAbove] == 1)
+                {
+                    tomorrowsOranges[currentSlot - cols] = 2;
+                }
+            }
+            else if (edge == Edge.Left)
+            {
+                var slotRight = oranges[currentSlot + 1];
+                var slotAbove = oranges[currentSlot - cols];
+                var slotBelow = oranges[currentSlot + cols];
+                if (oranges[slotRight] == 1)
+                {
+                    tomorrowsOranges[currentSlot + 1] = 2;
+                }
+                if (oranges[slotBelow] == 1)
+                {
+                    tomorrowsOranges[currentSlot - cols] = 2;
+                }
+                if (oranges[slotAbove] == 1)
+                {
+                    tomorrowsOranges[currentSlot + cols] = 2;
+                }
+            }
+        }
     }
 
     public static void PrintCrate(int rows, int columns, int[] oranges)
@@ -98,7 +264,7 @@ internal class Program
         AnsiConsole.Write(crate);
     }
 
-    public void PrintAnswer(int numberOfDays)
+    public static void PrintAnswer(int numberOfDays)
     {
         string result = string.Empty;
         if (numberOfDays == -1)
