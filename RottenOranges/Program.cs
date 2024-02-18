@@ -21,8 +21,63 @@ internal class Program
         int cols = 5;
         int[] oranges = new int[]{ 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2};
         PrintCrate(rows, cols, oranges);
+        RotOranges(rows, cols, oranges);
     }
-    
+
+    private static void RotOranges(int rows, int cols, int[] oranges)
+    {
+        
+        for(int i = 0; i < oranges.Length; i++) 
+        {
+            //Edge Represents different sides/corners
+            Edge edge = new Edge();
+            if (i % cols == 0)
+            {
+                if (i <= cols)
+                {
+                    edge = Edge.TopLeft;
+                }
+                else if (i == oranges.Length-cols)
+                {
+                    edge = Edge.BottomLeft;
+                }
+                else
+                {
+                    edge = Edge.Left;
+                }
+            }
+            if (i % cols == 4)
+            {
+                if (i == cols-1)
+                {
+                    edge = Edge.TopRight;
+                }
+                else if (i == oranges.Length-1)
+                {
+                    edge = Edge.BottomRight;
+                }
+                else
+                {
+                    edge = Edge.Right;
+                }
+            }
+            if (i < cols)
+            {
+                edge = Edge.Top;
+            }
+            if (i > oranges.Length - cols)
+            {
+                edge = Edge.Bottom;
+            }
+        }
+        }
+    }
+
+    private static void Rot(int i, int rows, int cols, int[] oranges, EDirection right)
+    {
+        throw new NotImplementedException();
+    }
+
     public static void PrintCrate(int rows, int columns, int[] oranges)
     {
         Table crate = new Table();
