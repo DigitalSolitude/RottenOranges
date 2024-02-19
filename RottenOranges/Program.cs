@@ -15,34 +15,49 @@ using System.Runtime.InteropServices;
 
 internal class Program
 {
-    static int rows = 3;
-    static int cols = 5;
-    static int[] todaysOranges = new int[] { 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2 };
+    static int rows = 4;
+    static int cols = 6;
+    static int[] todaysOranges = new int[] { 0, 1, 2, 0, 0, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 1, 1,1 ,1,2,1,1,1,1 };
     static int[] tomorrowsOranges = new int[todaysOranges.Length];
     static int daysPassed = 0;
     private static void Main(string[] args)
     {
         PrintCrate(rows, cols, todaysOranges);
-        while (todaysOranges != tomorrowsOranges)
+        MainLoop();
+    }
+
+    private static void MainLoop()
+      {
+        EdgeChecker(rows, cols, todaysOranges);
+        if (todaysOranges == tomorrowsOranges)
         {
-            EdgeChecker(rows, cols, todaysOranges);
-            if (todaysOranges == tomorrowsOranges)
-            {
-                PrintCrate(rows, cols, todaysOranges);
-                PrintAnswer(-1);
-            }
-            todaysOranges = tomorrowsOranges;
-            tomorrowsOranges.ToList().Clear();
             PrintCrate(rows, cols, todaysOranges);
-            daysPassed++;
+            if (todaysOranges.Contains(1))
+            {
+                PrintAnswer(-1);
+                return;
+            }
+            else
+            {
+                PrintAnswer(daysPassed);
+                return;
+            }
         }
+        todaysOranges = tomorrowsOranges;
+        tomorrowsOranges.ToList().Clear();
+        PrintCrate(rows, cols, todaysOranges);
+        daysPassed++;
+        MainLoop();
     }
 
     private static void EdgeChecker(int rows, int cols, int[] oranges)
     {
-        
         for (int i = 0; i < oranges.Length; i++) 
         {
+            if (oranges[i] != 0)
+            {
+                tomorrowsOranges[i] = oranges[i];
+            }
             Edge edge = new Edge();
             edge = Edge.NotEdge;
             //Edge Represents different sides/corners
@@ -84,17 +99,16 @@ internal class Program
                     edge = Edge.Right;
                 }
             }
-            
             RotOranges(rows, cols, oranges, edge, i);
         }
     }
 
-    private static void RotOranges(int rows, int cols, int[] oranges, Edge? edge, int currentSlot)
+    private static void RotOranges(int rows, int cols, int[] oranges, Edge edge, int currentSlot)
     {
         
         if (oranges[currentSlot] == 2)
         {
-            if (edge == null)
+            if (edge == Edge.NotEdge)
             {
                 var slotLeft = oranges[currentSlot - 1];
                 var slotRight = oranges[currentSlot + 1];
@@ -103,6 +117,7 @@ internal class Program
                 if (slotLeft == 1)
                 {
                     tomorrowsOranges[currentSlot - 1] = 2;
+                    todaysOranges[currentSlot] =4; 
                 }
                 if (oranges[slotRight] == 1)
                 {
@@ -234,14 +249,15 @@ internal class Program
                 }
                 if (oranges[slotBelow] == 1)
                 {
-                    tomorrowsOranges[currentSlot - cols] = 2;
+                    tomorrowsOranges[currentSlot + cols] = 2;
                 }
                 if (oranges[slotAbove] == 1)
                 {
-                    tomorrowsOranges[currentSlot + cols] = 2;
+                    tomorrowsOranges[currentSlot - cols] = 2;
                 }
             }
         }
+        
     }
 
     public static void PrintCrate(int rows, int columns, int[] oranges)
@@ -273,7 +289,7 @@ internal class Program
         }
         else
         {
-            result = "It took {numberOfDays} days to rot all the oranges";
+            result = $"It took {numberOfDays} days to rot all the oranges";
         }
         Console.WriteLine(result);
     }
